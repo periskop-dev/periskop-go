@@ -1,0 +1,16 @@
+run:
+  skip-dirs:
+    - errutils
+linters:
+  enable-all: true
+  disable:
+    - wsl
+issues:
+  exclude-rules:
+  - path: _test\.go
+    linters:
+      - gomnd
+      - funlen
+      - scopelint
+      - gochecknoglobals
+      - govet
