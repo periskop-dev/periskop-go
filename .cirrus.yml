@@ -1,0 +1,15 @@
+task:
+  name: Lint
+  container:
+    image: golangci/golangci-lint:v1.21
+  lint_script: make lint
+task:
+  name: Test
+  container:
+    image: golang:latest
+  env:
+    GOPROXY: https://proxy.golang.org
+  modules_cache:
+    fingerprint_script: cat go.sum
+    folder: $GOPATH/pkg/mod
+  test_script: make test
