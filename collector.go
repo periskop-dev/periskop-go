@@ -89,7 +89,7 @@ func (c *ErrorCollector) addError(err error, httpCtx HTTPContext) {
 		aggregatedErr, _ := aggregatedErr.(*aggregatedError)
 		aggregatedErr.addError(errorWithContext)
 	} else {
-		aggregatedErr := newErrorAggregate(aggregationKey, SeverityError)
+		aggregatedErr := newAggregatedError(aggregationKey, SeverityError)
 		aggregatedErr.addError(errorWithContext)
 		c.aggregatedErrors.Store(aggregationKey, &aggregatedErr)
 	}

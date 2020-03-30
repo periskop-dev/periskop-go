@@ -50,7 +50,7 @@ func TestCollector_Report(t *testing.T) {
 	}
 
 	errorWithContext := getAggregateErr(c.aggregatedErrors).LatestErrors[0]
-	if errorWithContext.Error.Cause != err.Error() {
+	if errorWithContext.Error.Message != err.Error() {
 		t.Errorf("expected a propagated error")
 	}
 

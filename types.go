@@ -33,7 +33,7 @@ type aggregatedError struct {
 	mux            sync.Mutex
 }
 
-func newErrorAggregate(aggregationKey string, severity Severity) aggregatedError {
+func newAggregatedError(aggregationKey string, severity Severity) aggregatedError {
 	return aggregatedError{
 		AggregationKey: aggregationKey,
 		TotalCount:     0,
@@ -78,15 +78,14 @@ func newErrorWithContext(errInstance errorInstance, severity Severity, httpCtx H
 }
 
 type errorInstance struct {
-	Class      string   `json:"class"`
-	Message    string   `json:"message"`
-	Stacktrace []string `json:"stacktrace"`
-	Cause      string   `json:"cause"`
+	Class      string         `json:"class"`
+	Message    string         `json:"message"`
+	Stacktrace []string       `json:"stacktrace"`
+	Cause      *errorInstance `json:"cause"`
 }
 
 func newErrorInstance(err error, funcCaller string, stacktrace []string) errorInstance {
 	return errorInstance{
-		Cause:      err.Error(),
 		Message:    err.Error(),
 		Class:      funcCaller,
 		Stacktrace: stacktrace,
@@ -96,7 +95,7 @@ func newErrorInstance(err error, funcCaller string, stacktrace []string) errorIn
 // aggregationKey generates a hash for errorWithContext using the last MaxTraces
 func (e *errorWithContext) aggregationKey() string {
 	stacktraceHead := e.Error.Stacktrace
-	if len(e.Error.Stacktrace) > MaxTraces {
+	if len(stacktraceHead) > MaxTraces {
 		stacktraceHead = stacktraceHead[:MaxTraces]
 	}
 	stacktraceHeadHash := hash(strings.Join(stacktraceHead, ""))
