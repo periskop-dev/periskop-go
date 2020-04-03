@@ -2,7 +2,7 @@ package periskop
 
 import (
 	"net/http"
-	"runtime"
+	"reflect"
 	"strings"
 	"sync"
 
@@ -59,18 +59,6 @@ func getStackTrace(err error) []string {
 	return s
 }
 
-// functionCaller gets the caller of one of the Report functions.
-// skip param in runtime.Caller func is set to 3 because we want
-// to ascend 3 function calls until arrive to original function caller
-func functionCaller() string {
-	pc, _, _, ok := runtime.Caller(3)
-	details := runtime.FuncForPC(pc)
-	if ok && details != nil {
-		return details.Name()
-	}
-	return ""
-}
-
 func (c *ErrorCollector) getAggregatedErrors() payload {
 	aggregatedErrors := make([]*aggregatedError, 0)
 	c.aggregatedErrors.Range(func(key, value interface{}) bool {
@@ -82,7 +70,7 @@ func (c *ErrorCollector) getAggregatedErrors() payload {
 }
 
 func (c *ErrorCollector) addError(err error, httpCtx HTTPContext) {
-	errorInstance := newErrorInstance(err, functionCaller(), getStackTrace(err))
+	errorInstance := newErrorInstance(err, reflect.TypeOf(err).String(), getStackTrace(err))
 	errorWithContext := newErrorWithContext(errorInstance, SeverityError, httpCtx)
 	aggregationKey := errorWithContext.aggregationKey()
 	if aggregatedErr, ok := c.aggregatedErrors.Load(aggregationKey); ok {
