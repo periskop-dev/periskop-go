@@ -36,7 +36,7 @@ func main() {
 	c.Report(faultyJSONParser())
 
 	// With HTTP context
-	c.ReportWithHTTPContext(faultyJSONParser(), periskop.HTTPContext{
+	c.ReportWithHTTPContext(faultyJSONParser(), &periskop.HTTPContext{
 		RequestMethod:  "GET",
 		RequestURL:     "http://example.com",
 		RequestHeaders: map[string]string{"Cache-Control": "no-cache"},

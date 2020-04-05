@@ -64,10 +64,10 @@ type errorWithContext struct {
 	UUID        uuid.UUID     `json:"uuid"`
 	Timestamp   time.Time     `json:"timestamp"`
 	Severity    Severity      `json:"severity"`
-	HTTPContext HTTPContext   `json:"http_context"`
+	HTTPContext *HTTPContext  `json:"http_context"`
 }
 
-func newErrorWithContext(errInstance errorInstance, severity Severity, httpCtx HTTPContext) errorWithContext {
+func newErrorWithContext(errInstance errorInstance, severity Severity, httpCtx *HTTPContext) errorWithContext {
 	return errorWithContext{
 		Error:       errInstance,
 		UUID:        uuid.New(),

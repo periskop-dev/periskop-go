@@ -21,17 +21,17 @@ func NewErrorCollector() ErrorCollector {
 
 // Report adds an error to map of aggregated errors
 func (c *ErrorCollector) Report(err error) {
-	c.addError(err, HTTPContext{})
+	c.addError(err, nil)
 }
 
 // ReportWithHTTPContext adds an error (with HTTPContext) to map of aggregated errors
-func (c *ErrorCollector) ReportWithHTTPContext(err error, httpCtx HTTPContext) {
+func (c *ErrorCollector) ReportWithHTTPContext(err error, httpCtx *HTTPContext) {
 	c.addError(err, httpCtx)
 }
 
 // ReportWithHTTPRequest adds and error (with HTTPContext from http.Request) to map of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request) {
-	c.addError(err, HTTPContext{
+	c.addError(err, &HTTPContext{
 		RequestMethod:  r.Method,
 		RequestURL:     r.URL.String(),
 		RequestHeaders: getAllHeaders(r.Header),
@@ -81,7 +81,7 @@ func (c *ErrorCollector) getAggregatedErrors() payload {
 	return payload{aggregatedErrors}
 }
 
-func (c *ErrorCollector) addError(err error, httpCtx HTTPContext) {
+func (c *ErrorCollector) addError(err error, httpCtx *HTTPContext) {
 	errorInstance := newErrorInstance(err, functionCaller(), getStackTrace(err))
 	errorWithContext := newErrorWithContext(errorInstance, SeverityError, httpCtx)
 	aggregationKey := errorWithContext.aggregationKey()
