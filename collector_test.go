@@ -123,3 +123,15 @@ func TestCollector_getAggregatedErrors(t *testing.T) {
 			aggregatedErr.AggregationKey, payload.AggregatedErrors[0].AggregationKey)
 	}
 }
+
+func TestCollector_getStackTrace(t *testing.T) {
+	err := errors.New("testing")
+	stacktrace := getStackTrace(err)
+	if len(stacktrace) == 0 {
+		t.Errorf("expected a  stacktrace")
+	}
+	lastFrame := stacktrace[len(stacktrace)-1]
+	if lastFrame == "" {
+		t.Errorf("got empty frame")
+	}
+}
