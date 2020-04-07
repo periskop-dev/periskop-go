@@ -54,7 +54,7 @@ func TestCollector_Report(t *testing.T) {
 		t.Errorf("expected a propagated error")
 	}
 
-	if errorWithContext.Error.Class != "github.com/soundcloud/periskop-go.TestCollector_Report" {
+	if errorWithContext.Error.Class != "*errors.errorString" {
 		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
 	}
 
@@ -82,7 +82,7 @@ func TestCollector_ReportWithHTTPContext(t *testing.T) {
 		t.Errorf("expected HTTP method GET")
 	}
 
-	if errorWithContext.Error.Class != "github.com/soundcloud/periskop-go.TestCollector_ReportWithHTTPContext" {
+	if errorWithContext.Error.Class != "*errors.errorString" {
 		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
 	}
 }
@@ -106,7 +106,7 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 		t.Errorf("expected HTTP method GET")
 	}
 
-	if errorWithContext.Error.Class != "github.com/soundcloud/periskop-go.TestCollector_ReportWithHTTPRequest" {
+	if errorWithContext.Error.Class != "*errors.errorString" {
 		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
 	}
 }
