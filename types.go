@@ -84,10 +84,10 @@ type errorInstance struct {
 	Cause      *errorInstance `json:"cause"`
 }
 
-func newErrorInstance(err error, funcCaller string, stacktrace []string) errorInstance {
+func newErrorInstance(err error, errType string, stacktrace []string) errorInstance {
 	return errorInstance{
 		Message:    err.Error(),
-		Class:      funcCaller,
+		Class:      errType,
 		Stacktrace: stacktrace,
 	}
 }
@@ -98,7 +98,7 @@ func (e *errorWithContext) aggregationKey() string {
 	if len(stacktraceHead) > MaxTraces {
 		stacktraceHead = stacktraceHead[:MaxTraces]
 	}
-	stacktraceHeadHash := hash(strings.Join(stacktraceHead, ""))
+	stacktraceHeadHash := hash(e.Error.Message + strings.Join(stacktraceHead, ""))
 	return fmt.Sprintf("%s@%s", e.Error.Class, stacktraceHeadHash)
 }
 

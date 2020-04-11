@@ -54,7 +54,7 @@ func TestCollector_Report(t *testing.T) {
 		t.Errorf("expected a propagated error")
 	}
 
-	if errorWithContext.Error.Class != "github.com/soundcloud/periskop-go.TestCollector_Report" {
+	if errorWithContext.Error.Class != "*errors.errorString" {
 		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
 	}
 
@@ -82,7 +82,7 @@ func TestCollector_ReportWithHTTPContext(t *testing.T) {
 		t.Errorf("expected HTTP method GET")
 	}
 
-	if errorWithContext.Error.Class != "github.com/soundcloud/periskop-go.TestCollector_ReportWithHTTPContext" {
+	if errorWithContext.Error.Class != "*errors.errorString" {
 		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
 	}
 }
@@ -106,7 +106,7 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 		t.Errorf("expected HTTP method GET")
 	}
 
-	if errorWithContext.Error.Class != "github.com/soundcloud/periskop-go.TestCollector_ReportWithHTTPRequest" {
+	if errorWithContext.Error.Class != "*errors.errorString" {
 		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
 	}
 }
@@ -121,5 +121,17 @@ func TestCollector_getAggregatedErrors(t *testing.T) {
 	if payload.AggregatedErrors[0].AggregationKey != aggregatedErr.AggregationKey {
 		t.Errorf("keys for aggregated errors are different, expected: %s, got: %s",
 			aggregatedErr.AggregationKey, payload.AggregatedErrors[0].AggregationKey)
+	}
+}
+
+func TestCollector_getStackTrace(t *testing.T) {
+	err := errors.New("testing")
+	stacktrace := getStackTrace(err)
+	if len(stacktrace) == 0 {
+		t.Errorf("expected a  stacktrace")
+	}
+	lastFrame := stacktrace[len(stacktrace)-1]
+	if lastFrame == "" {
+		t.Errorf("got empty frame")
 	}
 }

@@ -7,13 +7,15 @@ import (
 
 var aggregationKeyCases = []struct {
 	expectedAggregationKey string
+	errorMessage           string
 	stacktrace             []string
 }{
-	{"testingError@811c9dc5", []string{""}},
-	{"testingError@8de5e669", []string{"line 0:", "division by zero"}},
-	{"testingError@203345ae", []string{"line 0:", "division by zero", "line 1:", "line 4:", "checkTest()"}},
-	{"testingError@2235876b", []string{"line 0:", "division by zero", "line 1:", "line 5:", "checkTest()"}},
-	{"testingError@2235876b", []string{"line 0:", "division by zero", "line 1:", "line 5:", "checkAnotherTest()"}},
+	{"testingError@af88b146", "error", []string{""}},
+	{"testingError@b8a5702f", "timeout error", []string{"line 0:", "error in testingError"}},
+	{"testingError@b8a5702f", "index error", []string{"line 0:", "error in testingError"}},
+	{"testingError@e1441017", "index error", []string{"line 0:", "index error", "line 1:", "line 4:", "checkTest()"}},
+	{"testingError@df41ce5a", "index error", []string{"line 0:", "index error", "line 1:", "line 5:", "checkTest()"}},
+	{"testingError@df41ce5a", "index error", []string{"line 0:", "index error", "line 1:", "line 5:", "checkFunc()"}},
 }
 
 func newMockErrorWithContext(stacktrace []string) errorWithContext {
