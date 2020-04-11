@@ -39,7 +39,7 @@ func TestExporter_Export(t *testing.T) {
 		UUID:      uuid,
 		Timestamp: time.Date(2020, 2, 17, 22, 42, 45, 0, time.UTC),
 		Severity:  SeverityError,
-		HTTPContext: HTTPContext{
+		HTTPContext: &HTTPContext{
 			RequestMethod:  "GET",
 			RequestURL:     "http://example.com",
 			RequestHeaders: map[string]string{"Cache-Control": "no-cache"},

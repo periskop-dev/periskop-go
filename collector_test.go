@@ -28,13 +28,13 @@ func count(aggregatedErrors sync.Map) int {
 func TestCollector_addError(t *testing.T) {
 	c := NewErrorCollector()
 	err := errors.New("testing")
-	c.addError(err, HTTPContext{})
+	c.addError(err, nil)
 
 	if count(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
-	c.addError(err, HTTPContext{})
+	c.addError(err, nil)
 	if getAggregateErr(c.aggregatedErrors).TotalCount != 2 {
 		t.Errorf("expected two elements")
 	}
@@ -71,7 +71,7 @@ func TestCollector_ReportWithHTTPContext(t *testing.T) {
 		RequestURL:     "http://example.com",
 		RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
 	}
-	c.ReportWithHTTPContext(err, httpContext)
+	c.ReportWithHTTPContext(err, &httpContext)
 
 	if count(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
@@ -114,7 +114,7 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 func TestCollector_getAggregatedErrors(t *testing.T) {
 	c := NewErrorCollector()
 	err := errors.New("testing")
-	c.addError(err, HTTPContext{})
+	c.addError(err, nil)
 
 	aggregatedErr := getAggregateErr(c.aggregatedErrors)
 	payload := c.getAggregatedErrors()

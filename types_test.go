@@ -20,7 +20,7 @@ var aggregationKeyCases = []struct {
 
 func newMockErrorWithContext(stacktrace []string) errorWithContext {
 	errorInstance := newErrorInstance(errors.New("divisin by zero"), "testingError", stacktrace)
-	return newErrorWithContext(errorInstance, SeverityError, HTTPContext{})
+	return newErrorWithContext(errorInstance, SeverityError, nil)
 }
 
 func TestTypes_aggregationKey(t *testing.T) {

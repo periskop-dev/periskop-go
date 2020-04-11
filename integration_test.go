@@ -23,7 +23,7 @@ func parseJSON(exportedErrors string) payload {
 func TestHandler(t *testing.T) {
 	c := NewErrorCollector()
 	c.Report(errFunc())
-	c.ReportWithHTTPContext(errFunc(), HTTPContext{
+	c.ReportWithHTTPContext(errFunc(), &HTTPContext{
 		RequestMethod:  "GET",
 		RequestURL:     "http://example.com",
 		RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
