@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-func getAggregateErr(aggregatedErrors map[string]*aggregatedError) *aggregatedError {
+func getFirstAggregatedErr(aggregatedErrors map[string]*aggregatedError) *aggregatedError {
 	for _, value := range aggregatedErrors {
 		return value
 	}
@@ -23,7 +23,7 @@ func TestCollector_addError(t *testing.T) {
 	}
 
 	c.addError(err, nil)
-	if getAggregateErr(c.aggregatedErrors).TotalCount != 2 {
+	if getFirstAggregatedErr(c.aggregatedErrors).TotalCount != 2 {
 		t.Errorf("expected two elements")
 	}
 }
@@ -37,7 +37,7 @@ func TestCollector_Report(t *testing.T) {
 		t.Errorf("expected one element")
 	}
 
-	errorWithContext := getAggregateErr(c.aggregatedErrors).LatestErrors[0]
+	errorWithContext := getFirstAggregatedErr(c.aggregatedErrors).LatestErrors[0]
 	if errorWithContext.Error.Message != err.Error() {
 		t.Errorf("expected a propagated error")
 	}
@@ -65,7 +65,7 @@ func TestCollector_ReportWithHTTPContext(t *testing.T) {
 		t.Errorf("expected one element")
 	}
 
-	errorWithContext := getAggregateErr(c.aggregatedErrors).LatestErrors[0]
+	errorWithContext := getFirstAggregatedErr(c.aggregatedErrors).LatestErrors[0]
 	if errorWithContext.HTTPContext.RequestMethod != "GET" {
 		t.Errorf("expected HTTP method GET")
 	}
@@ -89,7 +89,7 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 		t.Errorf("expected one element")
 	}
 
-	errorWithContext := getAggregateErr(c.aggregatedErrors).LatestErrors[0]
+	errorWithContext := getFirstAggregatedErr(c.aggregatedErrors).LatestErrors[0]
 	if errorWithContext.HTTPContext.RequestMethod != "GET" {
 		t.Errorf("expected HTTP method GET")
 	}
@@ -104,7 +104,7 @@ func TestCollector_getAggregatedErrors(t *testing.T) {
 	err := errors.New("testing")
 	c.addError(err, nil)
 
-	aggregatedErr := getAggregateErr(c.aggregatedErrors)
+	aggregatedErr := getFirstAggregatedErr(c.aggregatedErrors)
 	payload := c.getAggregatedErrors()
 	if payload.AggregatedErrors[0].AggregationKey != aggregatedErr.AggregationKey {
 		t.Errorf("keys for aggregated errors are different, expected: %s, got: %s",
