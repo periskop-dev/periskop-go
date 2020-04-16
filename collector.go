@@ -11,13 +11,15 @@ import (
 
 // ErrorCollector collects all the aggregated errors
 type ErrorCollector struct {
-	aggregatedErrors sync.Map
+	aggregatedErrors map[string]*aggregatedError
 	mux              sync.RWMutex
 }
 
 // NewErrorCollector creates new ErrorCollector
 func NewErrorCollector() ErrorCollector {
-	return ErrorCollector{}
+	return ErrorCollector{
+		aggregatedErrors: make(map[string]*aggregatedError),
+	}
 }
 
 // Report adds an error to map of aggregated errors
@@ -64,11 +66,9 @@ func (c *ErrorCollector) getAggregatedErrors() payload {
 	c.mux.RLock()
 	defer c.mux.RUnlock()
 	aggregatedErrors := make([]aggregatedError, 0)
-	c.aggregatedErrors.Range(func(key, value interface{}) bool {
-		aggregatedErr, _ := value.(*aggregatedError)
-		aggregatedErrors = append(aggregatedErrors, *aggregatedErr)
-		return true
-	})
+	for _, value := range c.aggregatedErrors {
+		aggregatedErrors = append(aggregatedErrors, *value)
+	}
 	return payload{aggregatedErrors}
 }
 
@@ -76,16 +76,14 @@ func (c *ErrorCollector) addError(err error, httpCtx *HTTPContext) {
 	errorInstance := newErrorInstance(err, reflect.TypeOf(err).String(), getStackTrace(err))
 	errorWithContext := newErrorWithContext(errorInstance, SeverityError, httpCtx)
 	aggregationKey := errorWithContext.aggregationKey()
-	if aggregatedErr, ok := c.aggregatedErrors.Load(aggregationKey); ok {
-		aggregatedErr, _ := aggregatedErr.(*aggregatedError)
-		c.mux.Lock()
+	c.mux.Lock()
+	if aggregatedErr, ok := c.aggregatedErrors[aggregationKey]; ok {
 		aggregatedErr.addError(errorWithContext)
-		c.mux.Unlock()
+
 	} else {
 		aggregatedErr := newAggregatedError(aggregationKey, SeverityError)
-		c.mux.Lock()
 		aggregatedErr.addError(errorWithContext)
-		c.mux.Unlock()
-		c.aggregatedErrors.Store(aggregationKey, &aggregatedErr)
+		c.aggregatedErrors[aggregationKey] = &aggregatedErr
 	}
+	c.mux.Unlock()
 }

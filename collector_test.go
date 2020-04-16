@@ -3,26 +3,14 @@ package periskop
 import (
 	"errors"
 	"net/http"
-	"sync"
 	"testing"
 )
 
-func getAggregateErr(aggregatedErrors sync.Map) *aggregatedError {
-	aggregatedErr := &aggregatedError{}
-	aggregatedErrors.Range(func(key, value interface{}) bool {
-		aggregatedErr, _ = value.(*aggregatedError)
-		return false
-	})
-	return aggregatedErr
-}
-
-func count(aggregatedErrors sync.Map) int {
-	count := 0
-	aggregatedErrors.Range(func(key, value interface{}) bool {
-		count++
-		return true
-	})
-	return count
+func getAggregateErr(aggregatedErrors map[string]*aggregatedError) *aggregatedError {
+	for _, value := range aggregatedErrors {
+		return value
+	}
+	return nil
 }
 
 func TestCollector_addError(t *testing.T) {
@@ -30,7 +18,7 @@ func TestCollector_addError(t *testing.T) {
 	err := errors.New("testing")
 	c.addError(err, nil)
 
-	if count(c.aggregatedErrors) != 1 {
+	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
@@ -45,7 +33,7 @@ func TestCollector_Report(t *testing.T) {
 	err := errors.New("testing")
 	c.Report(err)
 
-	if count(c.aggregatedErrors) != 1 {
+	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
@@ -73,7 +61,7 @@ func TestCollector_ReportWithHTTPContext(t *testing.T) {
 	}
 	c.ReportWithHTTPContext(err, &httpContext)
 
-	if count(c.aggregatedErrors) != 1 {
+	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
@@ -97,7 +85,7 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 	err = errors.New("testing")
 	c.ReportWithHTTPRequest(err, req)
 
-	if count(c.aggregatedErrors) != 1 {
+	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 

@@ -43,7 +43,7 @@ func TestHandler(t *testing.T) {
 	}
 	p := parseJSON(rr.Body.String())
 	if p.AggregatedErrors[0].TotalCount != 2 {
-		t.Errorf("no exceptions collected: %s", rr.Body.String())
+		t.Errorf("wrong number of exceptions collected: %s", rr.Body.String())
 	}
 }
 
