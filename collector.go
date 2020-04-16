@@ -12,6 +12,7 @@ import (
 // ErrorCollector collects all the aggregated errors
 type ErrorCollector struct {
 	aggregatedErrors sync.Map
+	mux              sync.RWMutex
 }
 
 // NewErrorCollector creates new ErrorCollector
@@ -75,10 +76,14 @@ func (c *ErrorCollector) addError(err error, httpCtx *HTTPContext) {
 	aggregationKey := errorWithContext.aggregationKey()
 	if aggregatedErr, ok := c.aggregatedErrors.Load(aggregationKey); ok {
 		aggregatedErr, _ := aggregatedErr.(*aggregatedError)
+		c.mux.Lock()
 		aggregatedErr.addError(errorWithContext)
+		c.mux.Unlock()
 	} else {
 		aggregatedErr := newAggregatedError(aggregationKey, SeverityError)
+		c.mux.Lock()
 		aggregatedErr.addError(errorWithContext)
+		c.mux.Unlock()
 		c.aggregatedErrors.Store(aggregationKey, &aggregatedErr)
 	}
 }
