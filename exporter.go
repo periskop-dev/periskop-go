@@ -18,10 +18,8 @@ func NewErrorExporter(collector *ErrorCollector) ErrorExporter {
 
 // Export exports all collected errors in json format
 func (e *ErrorExporter) Export() (string, error) {
-	e.collector.mux.RLock()
 	payload := e.collector.getAggregatedErrors()
 	res, err := json.Marshal(payload)
-	e.collector.mux.RUnlock()
 	if err != nil {
 		return "", err
 	}

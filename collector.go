@@ -61,10 +61,12 @@ func getStackTrace(err error) []string {
 }
 
 func (c *ErrorCollector) getAggregatedErrors() payload {
-	aggregatedErrors := make([]*aggregatedError, 0)
+	c.mux.RLock()
+	defer c.mux.RUnlock()
+	aggregatedErrors := make([]aggregatedError, 0)
 	c.aggregatedErrors.Range(func(key, value interface{}) bool {
 		aggregatedErr, _ := value.(*aggregatedError)
-		aggregatedErrors = append(aggregatedErrors, aggregatedErr)
+		aggregatedErrors = append(aggregatedErrors, *aggregatedErr)
 		return true
 	})
 	return payload{aggregatedErrors}

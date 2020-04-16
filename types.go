@@ -21,7 +21,7 @@ const (
 )
 
 type payload struct {
-	AggregatedErrors []*aggregatedError `json:"aggregated_errors"`
+	AggregatedErrors []aggregatedError `json:"aggregated_errors"`
 }
 
 type aggregatedError struct {
