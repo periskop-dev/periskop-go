@@ -3,26 +3,14 @@ package periskop
 import (
 	"errors"
 	"net/http"
-	"sync"
 	"testing"
 )
 
-func getAggregateErr(aggregatedErrors sync.Map) *aggregatedError {
-	aggregatedErr := &aggregatedError{}
-	aggregatedErrors.Range(func(key, value interface{}) bool {
-		aggregatedErr, _ = value.(*aggregatedError)
-		return false
-	})
-	return aggregatedErr
-}
-
-func count(aggregatedErrors sync.Map) int {
-	count := 0
-	aggregatedErrors.Range(func(key, value interface{}) bool {
-		count++
-		return true
-	})
-	return count
+func getFirstAggregatedErr(aggregatedErrors map[string]*aggregatedError) *aggregatedError {
+	for _, value := range aggregatedErrors {
+		return value
+	}
+	return nil
 }
 
 func TestCollector_addError(t *testing.T) {
@@ -30,12 +18,12 @@ func TestCollector_addError(t *testing.T) {
 	err := errors.New("testing")
 	c.addError(err, nil)
 
-	if count(c.aggregatedErrors) != 1 {
+	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
 	c.addError(err, nil)
-	if getAggregateErr(c.aggregatedErrors).TotalCount != 2 {
+	if getFirstAggregatedErr(c.aggregatedErrors).TotalCount != 2 {
 		t.Errorf("expected two elements")
 	}
 }
@@ -45,11 +33,11 @@ func TestCollector_Report(t *testing.T) {
 	err := errors.New("testing")
 	c.Report(err)
 
-	if count(c.aggregatedErrors) != 1 {
+	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
-	errorWithContext := getAggregateErr(c.aggregatedErrors).LatestErrors[0]
+	errorWithContext := getFirstAggregatedErr(c.aggregatedErrors).LatestErrors[0]
 	if errorWithContext.Error.Message != err.Error() {
 		t.Errorf("expected a propagated error")
 	}
@@ -73,11 +61,11 @@ func TestCollector_ReportWithHTTPContext(t *testing.T) {
 	}
 	c.ReportWithHTTPContext(err, &httpContext)
 
-	if count(c.aggregatedErrors) != 1 {
+	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
-	errorWithContext := getAggregateErr(c.aggregatedErrors).LatestErrors[0]
+	errorWithContext := getFirstAggregatedErr(c.aggregatedErrors).LatestErrors[0]
 	if errorWithContext.HTTPContext.RequestMethod != "GET" {
 		t.Errorf("expected HTTP method GET")
 	}
@@ -97,11 +85,11 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 	err = errors.New("testing")
 	c.ReportWithHTTPRequest(err, req)
 
-	if count(c.aggregatedErrors) != 1 {
+	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
-	errorWithContext := getAggregateErr(c.aggregatedErrors).LatestErrors[0]
+	errorWithContext := getFirstAggregatedErr(c.aggregatedErrors).LatestErrors[0]
 	if errorWithContext.HTTPContext.RequestMethod != "GET" {
 		t.Errorf("expected HTTP method GET")
 	}
@@ -116,7 +104,7 @@ func TestCollector_getAggregatedErrors(t *testing.T) {
 	err := errors.New("testing")
 	c.addError(err, nil)
 
-	aggregatedErr := getAggregateErr(c.aggregatedErrors)
+	aggregatedErr := getFirstAggregatedErr(c.aggregatedErrors)
 	payload := c.getAggregatedErrors()
 	if payload.AggregatedErrors[0].AggregationKey != aggregatedErr.AggregationKey {
 		t.Errorf("keys for aggregated errors are different, expected: %s, got: %s",

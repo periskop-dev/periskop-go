@@ -18,7 +18,8 @@ func NewErrorExporter(collector *ErrorCollector) ErrorExporter {
 
 // Export exports all collected errors in json format
 func (e *ErrorExporter) Export() (string, error) {
-	res, err := json.Marshal(e.collector.getAggregatedErrors())
+	payload := e.collector.getAggregatedErrors()
+	res, err := json.Marshal(payload)
 	if err != nil {
 		return "", err
 	}

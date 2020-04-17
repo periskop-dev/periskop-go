@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"hash/fnv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -22,7 +21,7 @@ const (
 )
 
 type payload struct {
-	AggregatedErrors []*aggregatedError `json:"aggregated_errors"`
+	AggregatedErrors []aggregatedError `json:"aggregated_errors"`
 }
 
 type aggregatedError struct {
@@ -30,7 +29,6 @@ type aggregatedError struct {
 	TotalCount     int                `json:"total_count"`
 	Severity       Severity           `json:"severity"`
 	LatestErrors   []errorWithContext `json:"latest_errors"`
-	mux            sync.Mutex
 }
 
 func newAggregatedError(aggregationKey string, severity Severity) aggregatedError {
@@ -42,14 +40,12 @@ func newAggregatedError(aggregationKey string, severity Severity) aggregatedErro
 }
 
 func (e *aggregatedError) addError(errWithContext errorWithContext) {
-	e.mux.Lock()
 	if len(e.LatestErrors) >= MaxErrors {
 		// dequeue
 		e.LatestErrors = e.LatestErrors[1:]
 	}
 	e.LatestErrors = append(e.LatestErrors, errWithContext)
 	e.TotalCount++
-	e.mux.Unlock()
 }
 
 // HTTPContext holds info of the HTTP context when an error is produced

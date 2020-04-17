@@ -43,7 +43,7 @@ func TestHandler(t *testing.T) {
 	}
 	p := parseJSON(rr.Body.String())
 	if p.AggregatedErrors[0].TotalCount != 2 {
-		t.Errorf("no exceptions collected: %s", rr.Body.String())
+		t.Errorf("wrong number of exceptions collected: %s", rr.Body.String())
 	}
 }
 
@@ -52,6 +52,7 @@ func TestConcurrency(t *testing.T) {
 	const maxIterations = 20
 
 	c := NewErrorCollector()
+	e := NewErrorExporter(&c)
 	var wg sync.WaitGroup
 	wg.Add(maxGoRoutines)
 	for i := 0; i < maxGoRoutines; i++ {
@@ -62,10 +63,10 @@ func TestConcurrency(t *testing.T) {
 				c.Report(errFunc())
 			}
 		}()
+		e.Export()
 	}
 	wg.Wait()
 
-	e := NewErrorExporter(&c)
 	s, _ := e.Export()
 	p := parseJSON(s)
 	if p.AggregatedErrors[0].TotalCount != maxGoRoutines*maxIterations {
