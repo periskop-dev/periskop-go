@@ -77,6 +77,7 @@ func (c *ErrorCollector) addError(err error, httpCtx *HTTPContext) {
 	errorWithContext := newErrorWithContext(errorInstance, SeverityError, httpCtx)
 	aggregationKey := errorWithContext.aggregationKey()
 	c.mux.Lock()
+	defer c.mux.Unlock()
 	if aggregatedErr, ok := c.aggregatedErrors[aggregationKey]; ok {
 		aggregatedErr.addError(errorWithContext)
 	} else {
@@ -84,5 +85,4 @@ func (c *ErrorCollector) addError(err error, httpCtx *HTTPContext) {
 		aggregatedErr.addError(errorWithContext)
 		c.aggregatedErrors[aggregationKey] = &aggregatedErr
 	}
-	c.mux.Unlock()
 }
