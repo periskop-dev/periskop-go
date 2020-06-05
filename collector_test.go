@@ -53,11 +53,13 @@ func TestCollector_Report(t *testing.T) {
 
 func TestCollector_ReportWithHTTPContext(t *testing.T) {
 	c := NewErrorCollector()
+	body := "some body"
 	err := errors.New("testing")
 	httpContext := HTTPContext{
 		RequestMethod:  "GET",
 		RequestURL:     "http://example.com",
 		RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
+		RequestBody:    &body,
 	}
 	c.ReportWithHTTPContext(err, &httpContext)
 
@@ -92,6 +94,10 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 	errorWithContext := getFirstAggregatedErr(c.aggregatedErrors).LatestErrors[0]
 	if errorWithContext.HTTPContext.RequestMethod != "GET" {
 		t.Errorf("expected HTTP method GET")
+	}
+
+	if errorWithContext.HTTPContext.RequestBody != nil {
+		t.Errorf("expected nil http request body but got %s", *errorWithContext.HTTPContext.RequestBody)
 	}
 
 	if errorWithContext.Error.Class != "*errors.errorString" {

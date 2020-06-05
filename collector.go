@@ -1,6 +1,8 @@
 package periskop
 
 import (
+	"io"
+	"io/ioutil"
 	"net/http"
 	"reflect"
 	"strings"
@@ -38,7 +40,21 @@ func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request) {
 		RequestMethod:  r.Method,
 		RequestURL:     r.URL.String(),
 		RequestHeaders: getAllHeaders(r.Header),
+		RequestBody:    getBody(r.Body),
 	})
+}
+
+// getBody reads io.Reader request body and returns either body converted to a string or a nil
+func getBody(body io.Reader) *string {
+	if body == nil {
+		return nil
+	}
+	r, err := ioutil.ReadAll(body)
+	bodyAsString := string(r)
+	if err != nil {
+		return nil
+	}
+	return &bodyAsString
 }
 
 // getAllHeaders gets all the headers of HTTP Request

@@ -43,6 +43,7 @@ func TestExporter_Export(t *testing.T) {
 			RequestMethod:  "GET",
 			RequestURL:     "http://example.com",
 			RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
+			RequestBody:    nil,
 		},
 	}
 
@@ -77,7 +78,8 @@ func TestExporter_Export(t *testing.T) {
 				  "request_url":"http://example.com",
 				  "request_headers":{
 					"Cache-Control":"no-cache"
-				  }
+				  },
+				  "request_body": null
 				}
 			  }
 			]
