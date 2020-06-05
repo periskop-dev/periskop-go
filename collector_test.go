@@ -97,7 +97,7 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 	}
 
 	if errorWithContext.HTTPContext.RequestBody != nil {
-		t.Errorf("expected empty http request body but got %s", *errorWithContext.HTTPContext.RequestBody)
+		t.Errorf("expected nil http request body but got %s", *errorWithContext.HTTPContext.RequestBody)
 	}
 
 	if errorWithContext.Error.Class != "*errors.errorString" {

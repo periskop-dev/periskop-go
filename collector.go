@@ -40,12 +40,12 @@ func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request) {
 		RequestMethod:  r.Method,
 		RequestURL:     r.URL.String(),
 		RequestHeaders: getAllHeaders(r.Header),
-		RequestBody:    readBody(r.Body),
+		RequestBody:    getBody(r.Body),
 	})
 }
 
-// readBody reads io.Reader request body and returns either body converted to a string or a nil
-func readBody(body io.Reader) *string {
+// getBody reads io.Reader request body and returns either body converted to a string or a nil
+func getBody(body io.Reader) *string {
 	if body == nil {
 		return nil
 	}
@@ -53,9 +53,8 @@ func readBody(body io.Reader) *string {
 	bodyAsString := string(r)
 	if err != nil {
 		return nil
-	} else {
-		return &bodyAsString
 	}
+	return &bodyAsString
 }
 
 // getAllHeaders gets all the headers of HTTP Request
