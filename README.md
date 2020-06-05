@@ -38,10 +38,12 @@ func main() {
 	c.Report(faultyJSONParser())
 
 	// With HTTP context
+	var body string := "some body"
 	c.ReportWithHTTPContext(faultyJSONParser(), &periskop.HTTPContext{
 		RequestMethod:  "GET",
 		RequestURL:     "http://example.com",
 		RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
+		RequestBody:	&body // optional request body, nil if not present
 	})
 
 	// With http.Request
