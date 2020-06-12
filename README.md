@@ -59,6 +59,20 @@ func main() {
 }
 ```
 
+### Custom aggregation for reported errors
+
+By default errors are aggregated by their _stack trace_ and _error message_. This might cause that errors that apparently are the same are treated as different in Periskop.
+
+To avoid that, you can manually group errors specifying the error key that you want to use:
+
+```go
+func main() {
+	c := periskop.NewErrorCollector()
+
+	c.Report(faultyJSONParser(), "json-parser-error")
+}
+```
+
 ## Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md)
