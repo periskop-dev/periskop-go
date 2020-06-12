@@ -72,6 +72,7 @@ func main() {
 	c.Report(faultyJSONParser(), "json-parser-error")
 }
 ```
+__Note:__ With this method you are also aggregating by _error class_ which means that for the previous example the aggregation key is `*json.SyntaxError@json-parser-error`.
 
 ## Contributing
 

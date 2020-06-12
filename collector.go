@@ -1,6 +1,7 @@
 package periskop
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -88,9 +89,11 @@ func (c *ErrorCollector) getAggregatedErrors() payload {
 	return payload{aggregatedErrors}
 }
 
+// getAggregationKey get the aggregation key of the error
 func getAggregationKey(errorWithContext errorWithContext, errKey ...string) string {
 	if len(errKey) > 0 {
-		return errKey[0]
+		// aggregate also by error type
+		return fmt.Sprintf("%s@%s", errorWithContext.Error.Class, errKey[0])
 	}
 	return errorWithContext.aggregationKey()
 }

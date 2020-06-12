@@ -55,6 +55,7 @@ func TestCollector_Report_errKey(t *testing.T) {
 	c := NewErrorCollector()
 	err := errors.New("testing")
 	errKey := "grouped-err"
+	errClass := "*errors.errorString"
 	c.Report(err, errKey)
 
 	if len(c.aggregatedErrors) != 1 {
@@ -66,11 +67,11 @@ func TestCollector_Report_errKey(t *testing.T) {
 		t.Errorf("expected a propagated error")
 	}
 
-	if aggregatedErr.AggregationKey != errKey {
+	if aggregatedErr.AggregationKey != errClass+"@"+errKey {
 		t.Errorf("expected an overwritten key")
 	}
 
-	if errorWithContext.Error.Class != "*errors.errorString" {
+	if errorWithContext.Error.Class != errClass {
 		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
 	}
 
