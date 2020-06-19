@@ -90,6 +90,7 @@ func (c *ErrorCollector) getAggregatedErrors() payload {
 }
 
 // getAggregationKey gets the aggregation key of the error
+// Specifying 'errKey' you bypass the default aggregation method
 func getAggregationKey(errorWithContext errorWithContext, errKey ...string) string {
 	if len(errKey) > 0 {
 		// aggregate also by error type
