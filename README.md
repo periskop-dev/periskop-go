@@ -59,6 +59,26 @@ func main() {
 }
 ```
 
+### Custom aggregation for reported errors
+
+By default errors are aggregated by their _stack trace_ and _error message_. This might cause that errors that are the same (but with different message) are treated as different in Periskop:
+
+```
+*url.Error@efdca928 -> Get "http://example": dial tcp 10.10.10.1:10100: i/o timeout
+*url.Error@824c748e -> Get "http://example": dial tcp 10.10.10.2:10100: i/o timeout
+```
+
+To avoid that, you can manually group errors specifying the error key that you want to use:
+
+```go
+func main() {
+	c := periskop.NewErrorCollector()
+	req, err := http.NewRequest("GET", "http://example.com", nil)
+	c.ReportWithHTTPRequest(err, req, "example-request-error")
+}
+```
+__Note:__ With this method you are also aggregating by _error class_ which means that for the previous example the aggregation key is `*url.Error@example-request-error`.
+
 ## Contributing
 
 Please see [CONTRIBUTING.md](CONTRIBUTING.md)

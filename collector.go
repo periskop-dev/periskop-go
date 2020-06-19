@@ -1,6 +1,7 @@
 package periskop
 
 import (
+	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -25,23 +26,23 @@ func NewErrorCollector() ErrorCollector {
 }
 
 // Report adds an error to map of aggregated errors
-func (c *ErrorCollector) Report(err error) {
-	c.addError(err, nil)
+func (c *ErrorCollector) Report(err error, errKey ...string) {
+	c.addError(err, nil, errKey...)
 }
 
 // ReportWithHTTPContext adds an error (with HTTPContext) to map of aggregated errors
-func (c *ErrorCollector) ReportWithHTTPContext(err error, httpCtx *HTTPContext) {
-	c.addError(err, httpCtx)
+func (c *ErrorCollector) ReportWithHTTPContext(err error, httpCtx *HTTPContext, errKey ...string) {
+	c.addError(err, httpCtx, errKey...)
 }
 
 // ReportWithHTTPRequest adds and error (with HTTPContext from http.Request) to map of aggregated errors
-func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request) {
+func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request, errKey ...string) {
 	c.addError(err, &HTTPContext{
 		RequestMethod:  r.Method,
 		RequestURL:     r.URL.String(),
 		RequestHeaders: getAllHeaders(r.Header),
 		RequestBody:    getBody(r.Body),
-	})
+	}, errKey...)
 }
 
 // getBody reads io.Reader request body and returns either body converted to a string or a nil
@@ -88,10 +89,20 @@ func (c *ErrorCollector) getAggregatedErrors() payload {
 	return payload{aggregatedErrors}
 }
 
-func (c *ErrorCollector) addError(err error, httpCtx *HTTPContext) {
+// getAggregationKey gets the aggregation key of the error
+// Specifying 'errKey' you bypass the default aggregation method
+func getAggregationKey(errorWithContext errorWithContext, errKey ...string) string {
+	if len(errKey) > 0 {
+		// aggregate also by error type
+		return fmt.Sprintf("%s@%s", errorWithContext.Error.Class, errKey[0])
+	}
+	return errorWithContext.aggregationKey()
+}
+
+func (c *ErrorCollector) addError(err error, httpCtx *HTTPContext, errKey ...string) {
 	errorInstance := newErrorInstance(err, reflect.TypeOf(err).String(), getStackTrace(err))
 	errorWithContext := newErrorWithContext(errorInstance, SeverityError, httpCtx)
-	aggregationKey := errorWithContext.aggregationKey()
+	aggregationKey := getAggregationKey(errorWithContext, errKey...)
 	c.mux.Lock()
 	defer c.mux.Unlock()
 	if aggregatedErr, ok := c.aggregatedErrors[aggregationKey]; ok {

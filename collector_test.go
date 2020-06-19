@@ -51,6 +51,35 @@ func TestCollector_Report(t *testing.T) {
 	}
 }
 
+func TestCollector_Report_errKey(t *testing.T) {
+	c := NewErrorCollector()
+	err := errors.New("testing")
+	errKey := "grouped-err"
+	errClass := "*errors.errorString"
+	c.Report(err, errKey)
+
+	if len(c.aggregatedErrors) != 1 {
+		t.Errorf("expected one element")
+	}
+	aggregatedErr := getFirstAggregatedErr(c.aggregatedErrors)
+	errorWithContext := aggregatedErr.LatestErrors[0]
+	if errorWithContext.Error.Message != err.Error() {
+		t.Errorf("expected a propagated error")
+	}
+
+	if aggregatedErr.AggregationKey != errClass+"@"+errKey {
+		t.Errorf("expected an overwritten key")
+	}
+
+	if errorWithContext.Error.Class != errClass {
+		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
+	}
+
+	if len(errorWithContext.Error.Stacktrace) == 0 {
+		t.Errorf("expected a collected stack trace")
+	}
+}
+
 func TestCollector_ReportWithHTTPContext(t *testing.T) {
 	c := NewErrorCollector()
 	body := "some body"
