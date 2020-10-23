@@ -52,7 +52,7 @@ func TestExporter_Export(t *testing.T) {
 		TotalCount:     1,
 		Severity:       SeverityError,
 		LatestErrors:   []errorWithContext{errWithContext},
-		Timestamp:      time.Date(2020, 2, 17, 22, 42, 45, 0, time.UTC),
+		CreatedAt:      time.Date(2020, 2, 17, 22, 42, 45, 0, time.UTC),
 	}
 	var expected = `{
 		"aggregated_errors":[
@@ -60,7 +60,7 @@ func TestExporter_Export(t *testing.T) {
 			"aggregation_key":"test",
 			"total_count":1,
 			"severity":"error",
-			"timestamp":"2020-02-17T22:42:45Z",
+			"created_at":"2020-02-17T22:42:45Z",
 			"latest_errors":[
 			  {
 				"error":{

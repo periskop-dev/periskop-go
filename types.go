@@ -29,7 +29,7 @@ type aggregatedError struct {
 	TotalCount     int                `json:"total_count"`
 	Severity       Severity           `json:"severity"`
 	LatestErrors   []errorWithContext `json:"latest_errors"`
-	Timestamp      time.Time          `json:"timestamp"`
+	CreatedAt      time.Time          `json:"created_at"`
 }
 
 func newAggregatedError(aggregationKey string, severity Severity) aggregatedError {
@@ -37,7 +37,7 @@ func newAggregatedError(aggregationKey string, severity Severity) aggregatedErro
 		AggregationKey: aggregationKey,
 		TotalCount:     0,
 		Severity:       severity,
-		Timestamp:      time.Now().UTC(),
+		CreatedAt:      time.Now().UTC(),
 	}
 }
 
