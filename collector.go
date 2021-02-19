@@ -25,24 +25,44 @@ func NewErrorCollector() ErrorCollector {
 	}
 }
 
-// Report adds an error to map of aggregated errors
+// Report adds an error with severity Error to map of aggregated errors
 func (c *ErrorCollector) Report(err error, errKey ...string) {
-	c.addError(err, nil, errKey...)
+	c.ReportWithSeverity(err, SeverityError, errKey...)
 }
 
-// ReportWithHTTPContext adds an error (with HTTPContext) to map of aggregated errors
+// ReportWithSeverity adds an error with given severity to map of aggregated errors
+func (c *ErrorCollector) ReportWithSeverity(err error, severity Severity, errKey ...string) {
+	c.addError(err, severity, nil, errKey...)
+}
+
+// ReportWithHTTPContext adds an error with severity Error (with HTTPContext) to map of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPContext(err error, httpCtx *HTTPContext, errKey ...string) {
-	c.addError(err, httpCtx, errKey...)
+	c.ReportWithHTTPContextAndSeverity(err, SeverityError, httpCtx, errKey...)
 }
 
-// ReportWithHTTPRequest adds and error (with HTTPContext from http.Request) to map of aggregated errors
+// ReportWithHTTPContextAndSeverity adds an error with given severity (with HTTPContext) to map of aggregated errors
+func (c *ErrorCollector) ReportWithHTTPContextAndSeverity(err error, severity Severity, httpCtx *HTTPContext,
+	errKey ...string) {
+	c.addError(err, severity, httpCtx, errKey...)
+}
+
+// ReportWithHTTPRequest adds and error with severity Error  (with HTTPContext from http.Request) to map
+// of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request, errKey ...string) {
-	c.addError(err, &HTTPContext{
-		RequestMethod:  r.Method,
-		RequestURL:     r.URL.String(),
-		RequestHeaders: getAllHeaders(r.Header),
-		RequestBody:    getBody(r.Body),
-	}, errKey...)
+	c.ReportWithHTTPRequestAndSeverity(err, SeverityError, r, errKey...)
+}
+
+// ReportWithHTTPRequestAndSeverity adds and error with given severity (with HTTPContext from http.Request) to
+// map of aggregated errors
+func (c *ErrorCollector) ReportWithHTTPRequestAndSeverity(err error, severity Severity, r *http.Request,
+	errKey ...string) {
+	c.addError(err, severity,
+		&HTTPContext{
+			RequestMethod:  r.Method,
+			RequestURL:     r.URL.String(),
+			RequestHeaders: getAllHeaders(r.Header),
+			RequestBody:    getBody(r.Body),
+		}, errKey...)
 }
 
 // getBody reads io.Reader request body and returns either body converted to a string or a nil
@@ -99,16 +119,16 @@ func getAggregationKey(errorWithContext errorWithContext, errKey ...string) stri
 	return errorWithContext.aggregationKey()
 }
 
-func (c *ErrorCollector) addError(err error, httpCtx *HTTPContext, errKey ...string) {
+func (c *ErrorCollector) addError(err error, severity Severity, httpCtx *HTTPContext, errKey ...string) {
 	errorInstance := newErrorInstance(err, reflect.TypeOf(err).String(), getStackTrace(err))
-	errorWithContext := newErrorWithContext(errorInstance, SeverityError, httpCtx)
+	errorWithContext := newErrorWithContext(errorInstance, severity, httpCtx)
 	aggregationKey := getAggregationKey(errorWithContext, errKey...)
 	c.mux.Lock()
 	defer c.mux.Unlock()
 	if aggregatedErr, ok := c.aggregatedErrors[aggregationKey]; ok {
 		aggregatedErr.addError(errorWithContext)
 	} else {
-		aggregatedErr := newAggregatedError(aggregationKey, SeverityError)
+		aggregatedErr := newAggregatedError(aggregationKey, severity)
 		aggregatedErr.addError(errorWithContext)
 		c.aggregatedErrors[aggregationKey] = &aggregatedErr
 	}
