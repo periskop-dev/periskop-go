@@ -41,17 +41,21 @@ func (c *ErrorCollector) ReportWithHTTPContext(err error, httpCtx *HTTPContext, 
 }
 
 // ReportWithHTTPContextAndSeverity adds an error with given severity (with HTTPContext) to map of aggregated errors
-func (c *ErrorCollector) ReportWithHTTPContextAndSeverity(err error, severity Severity, httpCtx *HTTPContext, errKey ...string) {
+func (c *ErrorCollector) ReportWithHTTPContextAndSeverity(err error, severity Severity, httpCtx *HTTPContext,
+	errKey ...string) {
 	c.addError(err, severity, httpCtx, errKey...)
 }
 
-// ReportWithHTTPRequest adds and error with severity Error  (with HTTPContext from http.Request) to map of aggregated errors
+// ReportWithHTTPRequest adds and error with severity Error  (with HTTPContext from http.Request) to map
+// of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request, errKey ...string) {
 	c.ReportWithHTTPRequestAndSeverity(err, SeverityError, r, errKey...)
 }
 
-// ReportWithHTTPRequestAndSeverity adds and error with given severity (with HTTPContext from http.Request) to map of aggregated errors
-func (c *ErrorCollector) ReportWithHTTPRequestAndSeverity(err error, severity Severity, r *http.Request, errKey ...string) {
+// ReportWithHTTPRequestAndSeverity adds and error with given severity (with HTTPContext from http.Request) to
+// map of aggregated errors
+func (c *ErrorCollector) ReportWithHTTPRequestAndSeverity(err error, severity Severity, r *http.Request,
+	errKey ...string) {
 	c.addError(err, severity,
 		&HTTPContext{
 			RequestMethod:  r.Method,
