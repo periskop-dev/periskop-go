@@ -25,32 +25,32 @@ func NewErrorCollector() ErrorCollector {
 	}
 }
 
-// Report adds an error to map of aggregated errors
+// Report adds an error with severity Error to map of aggregated errors
 func (c *ErrorCollector) Report(err error, errKey ...string) {
 	c.ReportWithSeverity(err, SeverityError, errKey...)
 }
 
-// Report adds an error with given severity to map of aggregated errors
+// ReportWithSeverity adds an error with given severity to map of aggregated errors
 func (c *ErrorCollector) ReportWithSeverity(err error, severity Severity, errKey ...string) {
 	c.addError(err, severity, nil, errKey...)
 }
 
-// ReportWithHTTPContext adds an error (with HTTPContext) to map of aggregated errors
+// ReportWithHTTPContext adds an error with severity Error (with HTTPContext) to map of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPContext(err error, httpCtx *HTTPContext, errKey ...string) {
 	c.ReportWithHTTPContextAndSeverity(err, SeverityError, httpCtx, errKey...)
 }
 
-// ReportWithHTTPContext adds an error with given severity (with HTTPContext) to map of aggregated errors
+// ReportWithHTTPContextAndSeverity adds an error with given severity (with HTTPContext) to map of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPContextAndSeverity(err error, severity Severity, httpCtx *HTTPContext, errKey ...string) {
 	c.addError(err, severity, httpCtx, errKey...)
 }
 
-// ReportWithHTTPRequest adds and error (with HTTPContext from http.Request) to map of aggregated errors
+// ReportWithHTTPRequest adds and error with severity Error  (with HTTPContext from http.Request) to map of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request, errKey ...string) {
 	c.ReportWithHTTPRequestAndSeverity(err, SeverityError, r, errKey...)
 }
 
-// ReportWithHTTPRequest adds and error with given severity (with HTTPContext from http.Request) to map of aggregated errors
+// ReportWithHTTPRequestAndSeverity adds and error with given severity (with HTTPContext from http.Request) to map of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPRequestAndSeverity(err error, severity Severity, r *http.Request, errKey ...string) {
 	c.addError(err, severity,
 		&HTTPContext{
