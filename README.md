@@ -37,6 +37,9 @@ func main() {
 	// Without context
 	c.Report(faultyJSONParser())
 
+	// Optionally pass Severity of an error (supported by all report methods)
+	c.ReportWithSeverity(faultyJSONParser(), periskop.SeverityInfo)
+
 	// With HTTP context
 	var body string := "some body"
 	c.ReportWithHTTPContext(faultyJSONParser(), &periskop.HTTPContext{
