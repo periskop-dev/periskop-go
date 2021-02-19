@@ -242,7 +242,7 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 func TestCollector_getAggregatedErrors(t *testing.T) {
 	c := NewErrorCollector()
 	err := errors.New("testing")
-	c.addError(err, SeverityError,nil)
+	c.addError(err, SeverityError, nil)
 
 	aggregatedErr := getFirstAggregatedErr(c.aggregatedErrors)
 	payload := c.getAggregatedErrors()

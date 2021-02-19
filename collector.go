@@ -54,11 +54,11 @@ func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request, errKe
 func (c *ErrorCollector) ReportWithHTTPRequestAndSeverity(err error, severity Severity, r *http.Request, errKey ...string) {
 	c.addError(err, severity,
 		&HTTPContext{
-		RequestMethod:  r.Method,
-		RequestURL:     r.URL.String(),
-		RequestHeaders: getAllHeaders(r.Header),
-		RequestBody:    getBody(r.Body),
-	}, errKey...)
+			RequestMethod:  r.Method,
+			RequestURL:     r.URL.String(),
+			RequestHeaders: getAllHeaders(r.Header),
+			RequestBody:    getBody(r.Body),
+		}, errKey...)
 }
 
 // getBody reads io.Reader request body and returns either body converted to a string or a nil
