@@ -18,9 +18,9 @@ var aggregationKeyCases = []struct {
 	{"testingError@df41ce5a", "index error", []string{"line 0:", "index error", "line 1:", "line 5:", "checkFunc()"}},
 }
 
-func newMockErrorWithContext(stacktrace []string) errorWithContext {
+func newMockErrorWithContext(stacktrace []string) ErrorWithContext {
 	errorInstance := newErrorInstance(errors.New("divisin by zero"), "testingError", stacktrace)
-	return newErrorWithContext(errorInstance, SeverityError, nil)
+	return NewErrorWithContext(errorInstance, SeverityError, nil)
 }
 
 func TestTypes_aggregationKey(t *testing.T) {
