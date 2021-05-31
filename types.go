@@ -91,7 +91,7 @@ func newErrorInstance(err error, errType string, stacktrace []string) ErrorInsta
 	}
 }
 
-// NewCustomErrorInstance allows to manually create an error instance without specifying a Go error
+// NewCustomErrorInstance allows to create a custom error instance without specifying a Go error
 func NewCustomErrorInstance(errMsg string, errType string, stacktrace []string) ErrorInstance {
 	return ErrorInstance{
 		Message:    errMsg,
