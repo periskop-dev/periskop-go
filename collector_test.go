@@ -248,7 +248,7 @@ func TestCollector_ReportErrorWithContext(t *testing.T) {
 		RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
 		RequestBody:    &body,
 	}
-	errorInstance := NewManualErrorInstance("testing", "manual_error", []string{"line 0:", "error in testingError"})
+	errorInstance := NewCustomErrorInstance("testing", "manual_error", []string{"line 0:", "error in testingError"})
 	errorWithContext := NewErrorWithContext(errorInstance, SeverityError, &httpContext)
 	c.ReportErrorWithContext(errorWithContext, SeverityError)
 
