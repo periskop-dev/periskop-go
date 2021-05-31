@@ -66,7 +66,7 @@ func (c *ErrorCollector) ReportWithHTTPRequestAndSeverity(err error, severity Se
 }
 
 // ReportErrorWithContext adds a manually generated errorWithContext with an specific to map of aggregated errors
-func (c *ErrorCollector) ReportErrorWithContext(errWithContext errorWithContext, severity Severity, errKey ...string) {
+func (c *ErrorCollector) ReportErrorWithContext(errWithContext ErrorWithContext, severity Severity, errKey ...string) {
 	c.addErrorWithContext(errWithContext, severity, errKey...)
 }
 
@@ -116,7 +116,7 @@ func (c *ErrorCollector) getAggregatedErrors() payload {
 
 // getAggregationKey gets the aggregation key of the error
 // Specifying 'errKey' you bypass the default aggregation method
-func getAggregationKey(errorWithContext errorWithContext, errKey ...string) string {
+func getAggregationKey(errorWithContext ErrorWithContext, errKey ...string) string {
 	if len(errKey) > 0 {
 		// aggregate also by error type
 		return fmt.Sprintf("%s@%s", errorWithContext.Error.Class, errKey[0])
@@ -130,7 +130,7 @@ func (c *ErrorCollector) addError(err error, severity Severity, httpCtx *HTTPCon
 	c.addErrorWithContext(errWithContext, severity, errKey...)
 }
 
-func (c *ErrorCollector) addErrorWithContext(errWithContext errorWithContext, severity Severity, errKey ...string) {
+func (c *ErrorCollector) addErrorWithContext(errWithContext ErrorWithContext, severity Severity, errKey ...string) {
 	aggregationKey := getAggregationKey(errWithContext, errKey...)
 	c.mux.Lock()
 	defer c.mux.Unlock()
