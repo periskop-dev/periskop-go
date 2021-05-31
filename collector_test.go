@@ -239,6 +239,37 @@ func TestCollector_ReportWithHTTPRequest(t *testing.T) {
 	}
 }
 
+func TestCollector_ReportErrorWithContext(t *testing.T) {
+	c := NewErrorCollector()
+	body := "some body"
+	httpContext := HTTPContext{
+		RequestMethod:  "GET",
+		RequestURL:     "http://example.com",
+		RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
+		RequestBody:    &body,
+	}
+	errorInstance := NewManualErrorInstance("testing", "manual_error", []string{"line 0:", "error in testingError"})
+	errorWithContext := NewErrorWithContext(errorInstance, SeverityError, &httpContext)
+	c.ReportErrorWithContext(errorWithContext, SeverityError)
+
+	if len(c.aggregatedErrors) != 1 {
+		t.Errorf("expected one element")
+	}
+
+	errorWithContext = getFirstAggregatedErr(c.aggregatedErrors).LatestErrors[0]
+	if errorWithContext.HTTPContext.RequestMethod != "GET" {
+		t.Errorf("expected HTTP method GET")
+	}
+
+	if errorWithContext.Error.Class != "manual_error" {
+		t.Errorf("incorrect class name, got %s", errorWithContext.Error.Class)
+	}
+
+	if errorWithContext.Severity != SeverityError {
+		t.Errorf("incorrect severity, got %s", SeverityError)
+	}
+}
+
 func TestCollector_getAggregatedErrors(t *testing.T) {
 	c := NewErrorCollector()
 	err := errors.New("testing")

@@ -66,7 +66,7 @@ type errorWithContext struct {
 	HTTPContext *HTTPContext  `json:"http_context"`
 }
 
-func newErrorWithContext(errInstance errorInstance, severity Severity, httpCtx *HTTPContext) errorWithContext {
+func NewErrorWithContext(errInstance errorInstance, severity Severity, httpCtx *HTTPContext) errorWithContext {
 	return errorWithContext{
 		Error:       errInstance,
 		UUID:        uuid.New(),
@@ -74,6 +74,7 @@ func newErrorWithContext(errInstance errorInstance, severity Severity, httpCtx *
 		Severity:    severity,
 		HTTPContext: httpCtx,
 	}
+
 }
 
 type errorInstance struct {
@@ -86,6 +87,15 @@ type errorInstance struct {
 func newErrorInstance(err error, errType string, stacktrace []string) errorInstance {
 	return errorInstance{
 		Message:    err.Error(),
+		Class:      errType,
+		Stacktrace: stacktrace,
+	}
+}
+
+// NewManualErrorInstance allows to manually create an error instance without specifying a Go error
+func NewManualErrorInstance(errMsg string, errType string, stacktrace []string) errorInstance {
+	return errorInstance{
+		Message:    errMsg,
 		Class:      errType,
 		Stacktrace: stacktrace,
 	}
