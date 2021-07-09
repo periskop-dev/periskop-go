@@ -22,6 +22,7 @@ const (
 
 type payload struct {
 	AggregatedErrors []aggregatedError `json:"aggregated_errors"`
+	TargetUUID       uuid.UUID         `json:"target_uuid"`
 }
 
 type aggregatedError struct {

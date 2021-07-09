@@ -31,6 +31,7 @@ func compareJSON(json0, json1 string) (bool, error) {
 func TestExporter_Export(t *testing.T) {
 	c := NewErrorCollector()
 	uuid, _ := uuid.Parse("5d9893c6-51d6-11ea-8aad-f894c260afe5")
+	c.uuid = uuid
 	errWithContext := ErrorWithContext{
 		Error: ErrorInstance{
 			Class:      errors.New("testing").Error(),
@@ -55,6 +56,7 @@ func TestExporter_Export(t *testing.T) {
 		CreatedAt:      time.Date(2020, 2, 17, 22, 42, 45, 0, time.UTC),
 	}
 	var expected = `{
+		"target_uuid": "5d9893c6-51d6-11ea-8aad-f894c260afe5",
 		"aggregated_errors":[
 		  {
 			"aggregation_key":"test",
