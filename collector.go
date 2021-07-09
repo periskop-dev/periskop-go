@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/google/uuid"
 	"github.com/soundcloud/periskop-go/errutils"
 )
 
@@ -16,12 +17,14 @@ import (
 type ErrorCollector struct {
 	aggregatedErrors map[string]*aggregatedError
 	mux              sync.RWMutex
+	uuid             uuid.UUID
 }
 
 // NewErrorCollector creates new ErrorCollector
 func NewErrorCollector() ErrorCollector {
 	return ErrorCollector{
 		aggregatedErrors: make(map[string]*aggregatedError),
+		uuid:             uuid.New(),
 	}
 }
 
@@ -111,7 +114,7 @@ func (c *ErrorCollector) getAggregatedErrors() payload {
 	for _, value := range c.aggregatedErrors {
 		aggregatedErrors = append(aggregatedErrors, *value)
 	}
-	return payload{aggregatedErrors}
+	return payload{aggregatedErrors, c.uuid}
 }
 
 // getAggregationKey gets the aggregation key of the error
