@@ -102,7 +102,7 @@ func faultyJSONParser() error {
 
 func reportAndPush(c *periskop.ErrorCollector, e *periskop.ErrorExporter, err error) error {
   c.Report(err)
-  return e.PushToGateway("localhost:6767")
+  return e.PushToGateway("http://localhost:6767")
 }
 
 func main() {

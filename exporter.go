@@ -3,7 +3,6 @@ package periskop
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -35,14 +34,12 @@ func (e *ErrorExporter) Export() (string, error) {
 }
 
 func (e *ErrorExporter) PushToGateway(addr string) error {
-	fmt.Println(e.Export())
 	exportedData, err := e.export()
 	if err == nil {
 		_, err := http.Post(addr+"/errors", "application/json", bytes.NewBuffer(exportedData))
 		if err == nil {
 			return nil
 		}
-		//defer resp.Body.Close()
 	}
 	return err
 }

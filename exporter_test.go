@@ -111,7 +111,7 @@ func TestExporter_Push(t *testing.T) {
 	errTest := errors.New("testing")
 	c.Report(errTest)
 	e := NewErrorExporter(&c)
-	err := e.PushToGateway("localhost:7878")
+	err := e.PushToGateway("http://localhost:7878")
 	if err != nil {
 		t.Errorf("error pushing exceptions: %v", err)
 	}
