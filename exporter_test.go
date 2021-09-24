@@ -105,3 +105,14 @@ func TestExporter_Export(t *testing.T) {
 		t.Errorf("data did not match:\nexpected: %s\ngot: %s", expected, data)
 	}
 }
+
+func TestExporter_Push(t *testing.T) {
+	c := NewErrorCollector()
+	errTest := errors.New("testing")
+	c.Report(errTest)
+	e := NewErrorExporter(&c)
+	err := e.PushToGateway("localhost:7878")
+	if err != nil {
+		t.Errorf("error pushing exceptions: %v", err)
+	}
+}

@@ -41,12 +41,12 @@ func main() {
 	c.ReportWithSeverity(faultyJSONParser(), periskop.SeverityInfo)
 
 	// With HTTP context
-	var body string := "some body"
+	body := "some body"
 	c.ReportWithHTTPContext(faultyJSONParser(), &periskop.HTTPContext{
 		RequestMethod:  "GET",
 		RequestURL:     "http://example.com",
 		RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
-		RequestBody:	&body // optional request body, nil if not present
+		RequestBody:    &body, // optional request body, nil if not present
 	})
 
 	// With http.Request
@@ -81,6 +81,37 @@ func main() {
 }
 ```
 __Note:__ With this method you are also aggregating by _error class_ which means that for the previous example the aggregation key is `*url.Error@example-request-error`.
+
+### Using push gateway
+
+You can also use [pushgateway](https://github.com/soundcloud/periskop-pushgateway) in case you want to push your metrics instead of using pull method. Use only in case you really need it (e.g a batch job) as it would degrade the performance of your application. In the following example, we assume that we deployed an instance of periskop-pushgateway on `http://localhost:6767`:
+
+```go
+package main
+
+import (
+	"encoding/json"
+	"github.com/soundcloud/periskop-go"
+)
+
+func faultyJSONParser() error {
+	var dat map[string]interface{}
+	// will return "unexpected end of JSON input"
+	return json.Unmarshal([]byte(`{"id":`), &dat)
+}
+
+func reportAndPush(c *periskop.ErrorCollector, e *periskop.ErrorExporter, err error) error {
+  c.Report(err)
+  return e.PushToGateway("localhost:6767")
+}
+
+func main() {
+	c := periskop.NewErrorCollector()
+	e := periskop.NewErrorExporter(&c)
+
+	reportAndPush(&c, &e, faultyJSONParser())
+}
+```
 
 ## Contributing
 
