@@ -5,6 +5,7 @@ linters:
   enable-all: true
   disable:
     - wsl
+    - bodyclose
 issues:
   exclude-rules:
   - path: _test\.go

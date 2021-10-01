@@ -1,7 +1,9 @@
 package periskop
 
 import (
+	"bytes"
 	"encoding/json"
+	"net/http"
 )
 
 // ErrorExporter exposes collected errors
@@ -16,12 +18,28 @@ func NewErrorExporter(collector *ErrorCollector) ErrorExporter {
 	}
 }
 
-// Export exports all collected errors in json format
-func (e *ErrorExporter) Export() (string, error) {
+func (e *ErrorExporter) export() ([]byte, error) {
 	payload := e.collector.getAggregatedErrors()
 	res, err := json.Marshal(payload)
 	if err != nil {
-		return "", err
+		return []byte{}, err
 	}
-	return string(res), nil
+	return res, nil
+}
+
+// Export exports all collected errors in json format
+func (e *ErrorExporter) Export() (string, error) {
+	res, err := e.export()
+	return string(res), err
+}
+
+func (e *ErrorExporter) PushToGateway(addr string) error {
+	exportedData, err := e.export()
+	if err == nil {
+		_, err := http.Post(addr+"/errors", "application/json", bytes.NewBuffer(exportedData))
+		if err == nil {
+			return nil
+		}
+	}
+	return err
 }
