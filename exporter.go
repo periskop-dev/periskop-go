@@ -33,6 +33,7 @@ func (e *ErrorExporter) Export() (string, error) {
 	return string(res), err
 }
 
+// PushToGateway pushes all collected errors to the pushgateway specified by `addr`
 func (e *ErrorExporter) PushToGateway(addr string) error {
 	exportedData, err := e.export()
 	if err == nil {
