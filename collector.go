@@ -10,7 +10,7 @@ import (
 	"sync"
 
 	"github.com/google/uuid"
-	"github.com/soundcloud/periskop-go/errutils"
+	"github.com/periskop-dev/periskop-go/errutils"
 )
 
 // ErrorCollector collects all the aggregated errors

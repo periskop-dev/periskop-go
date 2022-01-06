@@ -1,4 +1,4 @@
-module github.com/soundcloud/periskop-go
+module github.com/periskop-dev/periskop-go
 
 go 1.13
 
