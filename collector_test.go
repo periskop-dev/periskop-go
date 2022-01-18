@@ -87,7 +87,7 @@ func TestCollector_Report_errKey(t *testing.T) {
 	err := errors.New("testing")
 	errKey := "grouped-err"
 	errClass := "*errors.errorString"
-	c.Report(err, errKey)
+	c.Report(err, errClass+"@"+errKey)
 
 	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
