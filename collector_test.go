@@ -16,22 +16,22 @@ func getFirstAggregatedErr(aggregatedErrors map[string]*aggregatedError) *aggreg
 func TestCollector_addError(t *testing.T) {
 	c := NewErrorCollector()
 	err := errors.New("testing")
-	c.addError(err, SeverityError, nil)
+	c.addError(err, SeverityError, nil, "")
 
 	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
 	}
 
-	c.addError(err, SeverityError, nil)
+	c.addError(err, SeverityError, nil, "")
 	if getFirstAggregatedErr(c.aggregatedErrors).TotalCount != 2 {
 		t.Errorf("expected two elements")
 	}
 }
 
-func TestCollector_Report(t *testing.T) {
+func TestCollector_ReportError(t *testing.T) {
 	c := NewErrorCollector()
 	err := errors.New("testing")
-	c.Report(err)
+	c.ReportError(err)
 
 	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
@@ -87,7 +87,7 @@ func TestCollector_Report_errKey(t *testing.T) {
 	err := errors.New("testing")
 	errKey := "grouped-err"
 	errClass := "*errors.errorString"
-	c.Report(err, errClass+"@"+errKey)
+	c.Report(ErrorReport{err: err, errKey: errClass + "@" + errKey})
 
 	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
@@ -250,7 +250,7 @@ func TestCollector_ReportErrorWithContext(t *testing.T) {
 	}
 	errorInstance := NewCustomErrorInstance("testing", "manual_error", []string{"line 0:", "error in testingError"})
 	errorWithContext := NewErrorWithContext(errorInstance, SeverityError, &httpContext)
-	c.ReportErrorWithContext(errorWithContext, SeverityError)
+	c.ReportErrorWithContext(errorWithContext, SeverityError, "")
 
 	if len(c.aggregatedErrors) != 1 {
 		t.Errorf("expected one element")
@@ -273,7 +273,7 @@ func TestCollector_ReportErrorWithContext(t *testing.T) {
 func TestCollector_getAggregatedErrors(t *testing.T) {
 	c := NewErrorCollector()
 	err := errors.New("testing")
-	c.addError(err, SeverityError, nil)
+	c.addError(err, SeverityError, nil, "")
 
 	aggregatedErr := getFirstAggregatedErr(c.aggregatedErrors)
 	payload := c.getAggregatedErrors()

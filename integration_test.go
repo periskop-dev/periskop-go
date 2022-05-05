@@ -23,7 +23,7 @@ func parseJSON(exportedErrors string) payload {
 func TestHandler(t *testing.T) {
 	body := "some body"
 	c := NewErrorCollector()
-	c.Report(errFunc())
+	c.ReportError(errFunc())
 	c.ReportWithHTTPContext(errFunc(), &HTTPContext{
 		RequestMethod:  "GET",
 		RequestURL:     "http://example.com",
@@ -62,7 +62,7 @@ func TestConcurrency(t *testing.T) {
 			defer wg.Done()
 
 			for i := 0; i < maxIterations; i++ {
-				c.Report(errFunc())
+				c.ReportError(errFunc())
 			}
 		}()
 		e.Export()
