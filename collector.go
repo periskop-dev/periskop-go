@@ -14,10 +14,11 @@ import (
 
 // ErrorReport represents a report of a single error
 type ErrorReport struct {
-	err      error
-	severity Severity
-	httpCtx  *HTTPContext
-	errKey   string
+	err         error
+	severity    Severity
+	httpRequest *http.Request
+	httpCtx     *HTTPContext
+	errKey      string
 }
 
 // ErrorCollector collects all the aggregated errors
@@ -39,6 +40,9 @@ func NewErrorCollector() ErrorCollector {
 func (c *ErrorCollector) Report(report ErrorReport) {
 	if report.severity == "" {
 		report.severity = SeverityError
+	}
+	if report.httpCtx == nil {
+		report.httpCtx = httpRequestToContext(report.httpRequest)
 	}
 	c.addError(report.err, report.severity, report.httpCtx, report.errKey)
 }
@@ -72,18 +76,24 @@ func (c *ErrorCollector) ReportWithHTTPRequest(err error, r *http.Request) {
 // ReportWithHTTPRequestAndSeverity adds and error with given severity (with HTTPContext from http.Request) to
 // map of aggregated errors
 func (c *ErrorCollector) ReportWithHTTPRequestAndSeverity(err error, severity Severity, r *http.Request) {
-	c.addError(err, severity,
-		&HTTPContext{
-			RequestMethod:  r.Method,
-			RequestURL:     r.URL.String(),
-			RequestHeaders: getAllHeaders(r.Header),
-			RequestBody:    getBody(r.Body),
-		}, "")
+	c.addError(err, severity, httpRequestToContext(r), "")
 }
 
 // ReportErrorWithContext adds a manually generated ErrorWithContext to map of aggregated errors
 func (c *ErrorCollector) ReportErrorWithContext(errWithContext ErrorWithContext, severity Severity, errKey string) {
 	c.addErrorWithContext(errWithContext, severity, errKey)
+}
+
+func httpRequestToContext(r *http.Request) *HTTPContext {
+	if r == nil {
+		return nil
+	}
+	return &HTTPContext{
+		RequestMethod:  r.Method,
+		RequestURL:     r.URL.String(),
+		RequestHeaders: getAllHeaders(r.Header),
+		RequestBody:    getBody(r.Body),
+	}
 }
 
 // getBody reads io.Reader request body and returns either body converted to a string or a nil
