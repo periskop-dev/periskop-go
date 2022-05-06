@@ -35,7 +35,7 @@ func main() {
 	c := periskop.NewErrorCollector()
 
 	// Without context
-	c.Report(faultyJSONParser())
+	c.ReportError(faultyJSONParser())
 
 	// Optionally pass Severity of an error (supported by all report methods)
 	c.ReportWithSeverity(faultyJSONParser(), periskop.SeverityInfo)
@@ -52,6 +52,27 @@ func main() {
 	// With http.Request
 	req, err := http.NewRequest("GET", "http://example.com", nil)
 	c.ReportWithHTTPRequest(err, req)
+
+	// With a full error report
+	c.Report(periskop.ErrorReport{
+		err:      err,
+		severity: SeverityWarning,
+		httpCtx: &periskop.HTTPContext{
+			RequestMethod:  "GET",
+			RequestURL:     "http://example.com",
+			RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
+			RequestBody:    &body,
+		},
+		errKey: "json-parsing", // Overrides the errors aggregation key (see more info below)
+	})
+
+	// With a full error report, but with http.Request instead of HTTP context
+	c.Report(periskop.ErrorReport{
+		err:         err,
+		severity:    SeverityWarning,
+		httpRequest: req,
+		errKey:      "json-parsing",
+	})
 
 	// Call the exporter and HTTP handler to expose the
 	// errors in /-/exceptions endpoints
@@ -77,10 +98,13 @@ To avoid that, you can manually group errors specifying the error key that you w
 func main() {
 	c := periskop.NewErrorCollector()
 	req, err := http.NewRequest("GET", "http://example.com", nil)
-	c.ReportWithHTTPRequest(err, req, "example-request-error")
+	c.Report(periskop.ErrorReport{
+		err:         err,
+		httpRequest: req,
+		errKey:      "example-request-error",
+	})
 }
 ```
-__Note:__ With this method you are also aggregating by _error class_ which means that for the previous example the aggregation key is `*url.Error@example-request-error`.
 
 ### Using push gateway
 
@@ -101,7 +125,7 @@ func faultyJSONParser() error {
 }
 
 func reportAndPush(c *periskop.ErrorCollector, e *periskop.ErrorExporter, err error) error {
-  c.Report(err)
+  c.ReportError(err)
   return e.PushToGateway("http://localhost:6767")
 }
 

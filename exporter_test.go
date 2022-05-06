@@ -109,7 +109,7 @@ func TestExporter_Export(t *testing.T) {
 func TestExporter_Push(t *testing.T) {
 	c := NewErrorCollector()
 	errTest := errors.New("testing")
-	c.Report(errTest)
+	c.ReportError(errTest)
 	e := NewErrorExporter(&c)
 	err := e.PushToGateway("http://localhost:7878")
 	if err != nil {
