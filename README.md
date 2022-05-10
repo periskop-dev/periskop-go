@@ -57,7 +57,7 @@ func main() {
 	c.Report(periskop.ErrorReport{
 		Err:      err,
 		Severity: SeverityWarning,
-		HttpCtx: &periskop.HTTPContext{
+		HTTPCtx: &periskop.HTTPContext{
 			RequestMethod:  "GET",
 			RequestURL:     "http://example.com",
 			RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
@@ -70,7 +70,7 @@ func main() {
 	c.Report(periskop.ErrorReport{
 		Err:         err,
 		Severity:    SeverityWarning,
-		HttpRequest: req,
+		HTTPRequest: req,
 		ErrKey:      "json-parsing",
 	})
 
@@ -100,7 +100,7 @@ func main() {
 	req, err := http.NewRequest("GET", "http://example.com", nil)
 	c.Report(periskop.ErrorReport{
 		Err:         err,
-		HttpRequest: req,
+		HTTPRequest: req,
 		ErrKey:      "example-request-error",
 	})
 }

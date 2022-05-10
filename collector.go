@@ -16,8 +16,8 @@ import (
 type ErrorReport struct {
 	Err         error
 	Severity    Severity
-	HttpRequest *http.Request
-	HttpCtx     *HTTPContext
+	HTTPRequest *http.Request
+	HTTPCtx     *HTTPContext
 	ErrKey      string
 }
 
@@ -41,10 +41,10 @@ func (c *ErrorCollector) Report(report ErrorReport) {
 	if report.Severity == "" {
 		report.Severity = SeverityError
 	}
-	if report.HttpCtx == nil {
-		report.HttpCtx = httpRequestToContext(report.HttpRequest)
+	if report.HTTPCtx == nil {
+		report.HTTPCtx = httpRequestToContext(report.HTTPRequest)
 	}
-	c.addError(report.Err, report.Severity, report.HttpCtx, report.ErrKey)
+	c.addError(report.Err, report.Severity, report.HTTPCtx, report.ErrKey)
 }
 
 // ReportError adds an error with severity Error to map of aggregated errors
