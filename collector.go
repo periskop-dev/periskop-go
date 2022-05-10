@@ -14,11 +14,11 @@ import (
 
 // ErrorReport represents a report of a single error
 type ErrorReport struct {
-	err         error
-	severity    Severity
-	httpRequest *http.Request
-	httpCtx     *HTTPContext
-	errKey      string
+	Err         error
+	Severity    Severity
+	HttpRequest *http.Request
+	HttpCtx     *HTTPContext
+	ErrKey      string
 }
 
 // ErrorCollector collects all the aggregated errors
@@ -38,13 +38,13 @@ func NewErrorCollector() ErrorCollector {
 
 // Report adds an error report to map of aggregated errors. Severity defaults to Error when missing.
 func (c *ErrorCollector) Report(report ErrorReport) {
-	if report.severity == "" {
-		report.severity = SeverityError
+	if report.Severity == "" {
+		report.Severity = SeverityError
 	}
-	if report.httpCtx == nil {
-		report.httpCtx = httpRequestToContext(report.httpRequest)
+	if report.HttpCtx == nil {
+		report.HttpCtx = httpRequestToContext(report.HttpRequest)
 	}
-	c.addError(report.err, report.severity, report.httpCtx, report.errKey)
+	c.addError(report.Err, report.Severity, report.HttpCtx, report.ErrKey)
 }
 
 // ReportError adds an error with severity Error to map of aggregated errors

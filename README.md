@@ -55,23 +55,23 @@ func main() {
 
 	// With a full error report
 	c.Report(periskop.ErrorReport{
-		err:      err,
-		severity: SeverityWarning,
-		httpCtx: &periskop.HTTPContext{
+		Err:      err,
+		Severity: SeverityWarning,
+		HttpCtx: &periskop.HTTPContext{
 			RequestMethod:  "GET",
 			RequestURL:     "http://example.com",
 			RequestHeaders: map[string]string{"Cache-Control": "no-cache"},
 			RequestBody:    &body,
 		},
-		errKey: "json-parsing", // Overrides the errors aggregation key (see more info below)
+		ErrKey: "json-parsing", // Overrides the errors aggregation key (see more info below)
 	})
 
 	// With a full error report, but with http.Request instead of HTTP context
 	c.Report(periskop.ErrorReport{
-		err:         err,
-		severity:    SeverityWarning,
-		httpRequest: req,
-		errKey:      "json-parsing",
+		Err:         err,
+		Severity:    SeverityWarning,
+		HttpRequest: req,
+		ErrKey:      "json-parsing",
 	})
 
 	// Call the exporter and HTTP handler to expose the
@@ -99,9 +99,9 @@ func main() {
 	c := periskop.NewErrorCollector()
 	req, err := http.NewRequest("GET", "http://example.com", nil)
 	c.Report(periskop.ErrorReport{
-		err:         err,
-		httpRequest: req,
-		errKey:      "example-request-error",
+		Err:         err,
+		HttpRequest: req,
+		ErrKey:      "example-request-error",
 	})
 }
 ```
